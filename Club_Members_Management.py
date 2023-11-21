@@ -7,8 +7,7 @@ class MainFrame(CTk):
         self.title(title)
         self.geometry("400x400")
         # declaration of frames
-        log_in = LogIn(self)
-        log_in.show()
+        auth = AUTH(self)
     
 #Starting the main loop
 if __name__ == "__main__":
