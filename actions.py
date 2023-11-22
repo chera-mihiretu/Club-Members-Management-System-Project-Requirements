@@ -57,15 +57,21 @@ class AUTH:
         else:
             self.log_in_frame()
             self.on_log_in = not self.on_log_in
-# create the home page
+###################################################
+########### create the home page ##################
+###################################################
 class LoggedIn:
     def __init__(self, parent):
         #selected item to view
         self.selected = "Home"
         # creating the pages
-        self.side_bar = CTkFrame(master=parent, fg_color="white")
+        self.side_bar = CTkFrame(master=parent, fg_color="#1A0301")
         self.main_page = CTkFrame(master=parent,fg_color="white" )
-       
+        self.menus = {"Home":self.home, "Developers":self.dev, "Profile":self.profile, "Log Out":self.log_o}
+        self.frame_dictionary = {}
+        for frames in self.menus.keys():
+            self.frame_dictionary[frames] = CTkFrame(master=self.main_page, fg_color="#1A0301")
+
         
         # placing the pages
         self.side_bar.pack(fill=tk.Y, side=tk.LEFT, padx=5)
@@ -82,24 +88,28 @@ class LoggedIn:
     # calls the logout tab
     def log_o(self):
         self.change("Log Out")
+    def profile(self):
+        self.change("Profile")
     # to clear the frame
     def change(self, parent):
             self.selected = parent
+            
             for frames in self.side_bar.winfo_children():
                 frames.destroy()
             self.side_bar_handler()
     # write things that goes in to side bar
     def side_bar_handler(self):
         #list of menu lists for now
-        self.menus = {"Home":CTkButton(master=self.side_bar, text="Home", fg_color="transparent", text_color="black", hover_color="gray", command=self.home), 
-                      "Developers":CTkButton(master=self.side_bar, text="Developers", fg_color="transparent", text_color="black", hover_color="gray", command=self.dev),
-                      "Log Out":CTkButton(master=self.side_bar, text="Log Out", fg_color="transparent", text_color="black", hover_color="gray", command=self.log_o)}
-        self.side_bar.option_clear()
+        menus_items = {}
+        for item in self.menus.keys():
+            menus_items[item] = CTkButton(master=self.side_bar, text=item, fg_color="transparent",text_color="white", hover_color="#0088ff", command=self.menus[item],border_spacing=0)
         
-        for i in self.menus:
+        #self.side_bar.option_clear()
+        
+        for i in menus_items.keys():
             if i == self.selected:
-                self.menus[i]._bg_color = "pink"
+                menus_items[i]._bg_color = "#0088ff"
                 
             
-            self.menus[i].pack(fill=tk.X, side=tk.TOP, padx=10, pady=10)
+            menus_items[i].pack(fill=tk.X, side=tk.TOP, pady=5, padx=5)
 
