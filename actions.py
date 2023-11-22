@@ -1,6 +1,7 @@
-from doctest import master
+
 from customtkinter import *
 import tkinter as tk 
+from PIL import Image
 class AUTH:
     def __init__(self, parent):
         ### create the sign up and log in page
@@ -64,13 +65,15 @@ class LoggedIn:
     def __init__(self, parent):
         #selected item to view
         self.selected = "Home"
+        self.frame_dictionary = {}
+        self.menus_items = {}
         # creating the pages
         self.side_bar = CTkFrame(master=parent, fg_color="#1A0301")
         self.main_page = CTkFrame(master=parent,fg_color="white" )
         self.menus = {"Home":self.home, "Developers":self.dev, "Profile":self.profile, "Log Out":self.log_o}
-        self.frame_dictionary = {}
-        for frames in self.menus.keys():
-            self.frame_dictionary[frames] = CTkFrame(master=self.main_page, fg_color="#1A0301")
+        self.menus_page = {"Home":self.home_page, "Developers":self.dev_page, "Profile":self.profile_page, "Log Out":self.log_out_page}
+        
+        
 
         
         # placing the pages
@@ -79,37 +82,85 @@ class LoggedIn:
         self.main_page.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT, padx=5)
         #where things are added to the frames
         self.side_bar_handler()
-    #call the developers tab
+    #calls the developers page processor
     def dev(self):
         self.change("Developers")
-    #calls the home page tab
+    #calls the home page processor
     def home(self):
-        self.change("Home")
-    # calls the logout tab
+        self.change("Home")        
+    # calls the logout page processor
     def log_o(self):
         self.change("Log Out")
+    # calls the profile page processor
     def profile(self):
         self.change("Profile")
+    
     # to clear the frame
     def change(self, parent):
-            self.selected = parent
+        self.selected = parent
+        #clearing the main frame
+        for frames  in self.main_page.winfo_children():
+            frames.destroy()
+        #clearing the side bar for the button to update
+        for frames in self.side_bar.winfo_children():
+            frames.destroy()
             
-            for frames in self.side_bar.winfo_children():
-                frames.destroy()
-            self.side_bar_handler()
+
+        self.side_bar_handler()
     # write things that goes in to side bar
     def side_bar_handler(self):
+        #make the page that is active visible and recreate them
+        self.frame_dictionary = {}
+        for frames in self.menus.keys():
+            self.frame_dictionary[frames] = CTkScrollableFrame(master=self.main_page, fg_color="white")
+            if frames == self.selected:
+                self.frame_dictionary[frames].pack(fill=tk.BOTH, expand=True)
+        self.menus_page[self.selected](self.frame_dictionary[self.selected])
+        # recreate the buttons
         #list of menu lists for now
-        menus_items = {}
+        self.menus_items = {}
         for item in self.menus.keys():
-            menus_items[item] = CTkButton(master=self.side_bar, text=item, fg_color="transparent",text_color="white", hover_color="#0088ff", command=self.menus[item],border_spacing=0)
-        
+            self.menus_items[item] = CTkButton(master=self.side_bar, text=item, fg_color="transparent",text_color="white", hover_color="#0088ff", command=self.menus[item],border_spacing=0)
         #self.side_bar.option_clear()
-        
-        for i in menus_items.keys():
+        for i in self.menus_items.keys():
             if i == self.selected:
-                menus_items[i]._bg_color = "#0088ff"
-                
-            
-            menus_items[i].pack(fill=tk.X, side=tk.TOP, pady=5, padx=5)
+                self.menus_items[i]._bg_color = "#0088ff"
+            self.menus_items[i].pack(fill=tk.X, side=tk.TOP, pady=5, padx=5)
 
+    ##################################################################
+    ######################create page contents########################
+    ##################################################################
+    def home_page(self, parent):
+        pass
+    def dev_page(self, parent):
+        pass
+    def profile_page(self, parent):
+        pass
+    def log_out_page(self, parent):
+        pass
+    def single_post(self, parent,title="", message="", url=""):
+        #check if the image actually exists
+        file_exist = os.path.exists(url)
+        #create a page to display all posted ifos
+        frame_holder = CTkFrame(master=parent, fg_color="transparent")
+        frame = CTkFrame(master=frame_holder, fg_color="#170A17", corner_radius=10)
+        frames_to_dis = [CTkFrame(master=frame, fg_color="transparent") for i in range(3)]
+        t_text = CTkLabel(master=frames_to_dis[0], text=title, text_color="white",font=("Bold", 15))
+        t_text.pack(padx=10,expand=False, side=LEFT)
+        m_text = CTkLabel(master=frames_to_dis[1], text=message, text_color="white",font=("Normal", 10), justify=tk.LEFT)
+        m_text.pack(padx=10,expand=False, side=tk.LEFT)
+        #viw an image if the image is posted
+        img = None
+        if file_exist:
+            img = CTkImage(light_image=Image.open(url), size=(300,300))
+            img_= CTkLabel(master=frames_to_dis[2], image=img, text="")
+            img_.pack(expand=False, side=tk.LEFT)
+        for i in range(len(frames_to_dis)):
+            if i == 2:
+                if not file_exist:
+                    continue
+
+            frames_to_dis[i].pack(fill=tk.X, expand=False,side=tk.TOP)
+        frame.pack(expand=False, padx=10, pady=10, side=tk.LEFT)
+        frame_holder.pack(expand=False, fill=tk.X, side=tk.TOP)
+        
