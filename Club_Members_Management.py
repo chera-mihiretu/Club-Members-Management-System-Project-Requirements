@@ -8,7 +8,7 @@ class MainFrame(CTk):
         self.geometry("400x400")
         self.minsize(400,400)
         # declaration of frames
-        self.auth = LoggedIn(self)
+        self.auth = Admin(self)
         
         
     
