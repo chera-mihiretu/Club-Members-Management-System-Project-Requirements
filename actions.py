@@ -133,27 +133,46 @@ class LoggedIn:
     def home_page(self, parent):
         pass
     def dev_page(self, parent):
-        pass
+        for i in range(10):
+            self.single_dev(self.frame_dictionary[self.selected], "Cheraaaaaaa", "cheriyye")
     def profile_page(self, parent):
         pass
     def log_out_page(self, parent):
         pass
+    def single_dev(self, parent, name, user_name,  url="dev_icon.png"):
+        frame_holder = CTkFrame(master=parent, fg_color="transparent")
+        frame = CTkFrame(master=frame_holder,fg_color="#170A17")
+        frame_info = CTkFrame(master=frame, fg_color="transparent")
+        
+        name = CTkLabel(master=frame_info, text=name, font=("Normal", 12), text_color="white")
+        user_name = CTkLabel(master=frame_info, text="@"+user_name, font=("Normal", 12), text_color="white")
+        name.pack(expand=False, padx=5, pady=5, side=tk.TOP)
+        user_name.pack(expand=False, padx=5, pady=5, side=tk.TOP)
+        img = CTkImage(light_image=Image.open(url), size=(40,40))
+        img_= CTkLabel(master=frame, image=img, text="")
+        img_.pack(expand=False, side=tk.LEFT, padx=10)
+
+        frame.pack(expand=False, side=tk.LEFT, fill=tk.X, ipadx=10)
+        frame_info.pack(expand=False, side=tk.LEFT)
+        frame_holder.pack(expand=False, padx=10, pady = 10, side=tk.TOP, fill=tk.X)
+
+
     def single_post(self, parent,title="", message="", url=""):
         #check if the image actually exists
         file_exist = os.path.exists(url)
         #create a page to display all posted ifos
-        frame_holder = CTkFrame(master=parent, fg_color="transparent")
-        frame = CTkFrame(master=frame_holder, fg_color="#170A17", corner_radius=10)
-        frames_to_dis = [CTkFrame(master=frame, fg_color="transparent") for i in range(3)]
-        t_text = CTkLabel(master=frames_to_dis[0], text=title, text_color="white",font=("Bold", 15))
+        frame_holder = CTkFrame(master=parent, fg_color="transparent",bg_color="transparent")
+        frame = CTkFrame(master=frame_holder, fg_color="#170A17", corner_radius=10,bg_color="transparent")
+        frames_to_dis = [CTkFrame(master=frame, fg_color="transparent",bg_color="transparent") for i in range(3)]
+        t_text = CTkLabel(master=frames_to_dis[0], text=title, text_color="white",bg_color="transparent",font=("Bold", 15))
         t_text.pack(padx=10,expand=False, side=LEFT)
-        m_text = CTkLabel(master=frames_to_dis[1], text=message, text_color="white",font=("Normal", 10), justify=tk.LEFT)
+        m_text = CTkLabel(master=frames_to_dis[1], text=message, text_color="white",bg_color="transparent",font=("Normal", 10), justify=tk.LEFT)
         m_text.pack(padx=10,expand=False, side=tk.LEFT)
         #viw an image if the image is posted
         img = None
         if file_exist:
             img = CTkImage(light_image=Image.open(url), size=(300,300))
-            img_= CTkLabel(master=frames_to_dis[2], image=img, text="")
+            img_= CTkLabel(master=frames_to_dis[2], image=img,bg_color="transparent", text="")
             img_.pack(expand=False, side=tk.LEFT)
         for i in range(len(frames_to_dis)):
             if i == 2:
@@ -161,6 +180,6 @@ class LoggedIn:
                     continue
 
             frames_to_dis[i].pack(fill=tk.X, expand=False,side=tk.TOP)
-        frame.pack(expand=False, padx=10, pady=10, side=tk.LEFT)
+        frame.pack(expand=False, padx=10, pady=10,side=tk.LEFT)
         frame_holder.pack(expand=False, fill=tk.X, side=tk.TOP)
         
