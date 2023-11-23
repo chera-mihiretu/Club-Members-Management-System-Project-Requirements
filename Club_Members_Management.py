@@ -5,11 +5,13 @@ class MainFrame(CTk):
     def __init__(self, title):
         CTk.__init__(self)
         self.title(title)
-        self.geometry("400x400")
-        self.minsize(400,400)
+        self.geometry("600x400")
+        self.minsize(600,400)
         # declaration of frames
-        self.auth = Admin(self)
-        
+        self.auth = AUTH(self)
+    def plat(self):
+        print("may be")
+
         
     
 #Starting the main loop

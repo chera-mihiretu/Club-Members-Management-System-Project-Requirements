@@ -1,11 +1,14 @@
-from customtkinter import CTkFrame, CTkEntry, CTkButton, CTkInputDialog
+from customtkinter import CTkFrame, CTkEntry, CTkButton, CTkInputDialog, CTkScrollableFrame, CTkLabel, CTkImage
+from PIL import Image
 import tkinter as tk
+import os
 ###################################################
 ########### Create Inv for users ##################
 ###################################################
 class LoggedIn:
     def __init__(self, parent):
         #selected item to view
+        self.parent = parent
         self.selected = "Home"
         self.frame_dictionary = {}
         self.menus_items = {}
@@ -17,7 +20,7 @@ class LoggedIn:
         
         
 
-        
+    def show(self):
         # placing the pages
         self.side_bar.pack(fill=tk.Y, side=tk.LEFT, padx=5)
         self.side_bar.configure(width=200)
@@ -87,7 +90,7 @@ class LoggedIn:
         no = CTkButton(master=parent, text="No", fg_color="#170A17", command=lambda:self.change("Home"))
         no.pack(side=tk.TOP, pady=10)
     def log_out(self):
-        pass
+        self.parent.log_out()
     def update_info(self, inputs):
         pass
     def single_dev(self, parent, name, user_name,  url="dev_icon.png"):
@@ -108,7 +111,7 @@ class LoggedIn:
         frame_holder.pack(expand=False, padx=10, pady = 10, side=tk.TOP, fill=tk.X)
 
 
-    def single_post(self, parent,title="", message="", url=""):
+    def single_post(self, parent,title="", desc="", url=""):
         #check if the image actually exists
         file_exist = os.path.exists(url)
         #create a page to display all posted ifos
@@ -116,8 +119,8 @@ class LoggedIn:
         frame = CTkFrame(master=frame_holder, fg_color="#170A17", corner_radius=10,bg_color="transparent")
         frames_to_dis = [CTkFrame(master=frame, fg_color="transparent",bg_color="transparent") for i in range(3)]
         t_text = CTkLabel(master=frames_to_dis[0], text=title, text_color="white",bg_color="transparent",font=("Bold", 15))
-        t_text.pack(padx=10,expand=False, side=LEFT)
-        m_text = CTkLabel(master=frames_to_dis[1], text=message, text_color="white",bg_color="transparent",font=("Normal", 10), justify=tk.LEFT)
+        t_text.pack(padx=10,expand=False, side=tk.LEFT)
+        m_text = CTkLabel(master=frames_to_dis[1], text=desc, text_color="white",bg_color="transparent",font=("Normal", 10), justify=tk.LEFT)
         m_text.pack(padx=10,expand=False, side=tk.LEFT)
         #viw an image if the image is posted
         img = None

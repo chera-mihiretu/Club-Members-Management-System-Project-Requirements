@@ -1,27 +1,44 @@
 
+from doctest import master
 from customtkinter import CTkFrame, CTkEntry, CTkButton, CTkInputDialog
 import tkinter as tk
 from PIL import Image
 from LoggedIn import *
 from Admin import *
-class AUTH:
+class AUTH(CTkFrame):
     def __init__(self, parent):
+        CTkFrame.__init__(self, master=parent)
         ### create the sign up and log in page
         self.on_log_in = True
+        self.admin = False
         self.parent = parent
-        self.main_frame=CTkFrame(master=parent)
+        #self.main_frame=CTkFrame(master=parent)
+        self.user_page = None
+        self.admin_page = None
+        self.show()
+        self.pack(fill=tk.BOTH, expand=True)
+
+    def show(self):
+        if not self.on_log_in and not self.admin:
+            self.log_in_frame()
+            self.pack(fill=tk.BOTH, expand=True)
+        elif self.admin:
+            self.admin_page = Admin(self)
+            self.admin_page.show()
+        elif self.on_log_in:
+            self.user_page = LoggedIn(self)
+            self.user_page.show()
         
+    def check(self):
+        print("done")
         
-        self.log_in_frame()
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
-        self.admin= None
 
         
         
     #create the log frame
     def log_in_frame(self):
         #create contents
-        self.log_in = CTkFrame(master=self.main_frame, fg_color="white")
+        self.log_in = CTkFrame(master=self, fg_color="white")
         user_name = CTkEntry(master=self.log_in, placeholder_text="User Name")
         pass_word = CTkEntry(master=self.log_in, placeholder_text="Password")
         log_in = CTkButton(master=self.log_in, text="Log In")
@@ -44,7 +61,7 @@ class AUTH:
     #cereate the sign in frame
     def sign_up_frame(self):
         #create contents
-        self.sign_up = CTkFrame(master=self.main_frame, fg_color="white")
+        self.sign_up = CTkFrame(master=self, fg_color="white")
         user_name = CTkEntry(master=self.sign_up, placeholder_text="User Name")
         name = CTkEntry(master=self.sign_up, placeholder_text="Full Name")
         pass_word = CTkEntry(master=self.sign_up, placeholder_text="Password")
@@ -62,7 +79,7 @@ class AUTH:
         self.sign_up.pack(fill=tk.BOTH, expand=True)
     # this helps to toggle between the sign up and log in page
     def change_frame(self):
-        for frames in self.main_frame.winfo_children():
+        for frames in self.winfo_children():
             frames.destroy()
         if self.on_log_in:
             self.sign_up_frame()
@@ -70,4 +87,9 @@ class AUTH:
         else:
             self.log_in_frame()
             self.on_log_in = not self.on_log_in
-
+    def log_out(self):
+        for frames in self.winfo_children():
+            frames.destroy()
+        self.on_log_in = False
+        self.admin = False
+        self.show()
