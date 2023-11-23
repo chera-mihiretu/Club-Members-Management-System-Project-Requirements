@@ -70,7 +70,7 @@ class LoggedIn:
         # creating the pages
         self.side_bar = CTkFrame(master=parent, fg_color="#1A0301")
         self.main_page = CTkFrame(master=parent,fg_color="white" )
-        self.menus = {"Home":self.home, "Developers":self.dev, "Profile":self.profile, "Log Out":self.log_o}
+        self.menus = {"Home":lambda:self.change("Home"), "Developers":lambda:self.change("Developers"), "Profile":lambda:self.change("Profile"), "Log Out":lambda:self.change("Log Out")}
         self.menus_page = {"Home":self.home_page, "Developers":self.dev_page, "Profile":self.profile_page, "Log Out":self.log_out_page}
         
         
@@ -82,21 +82,11 @@ class LoggedIn:
         self.main_page.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT, padx=5)
         #where things are added to the frames
         self.side_bar_handler()
-    #calls the developers page processor
-    def dev(self):
-        self.change("Developers")
-    #calls the home page processor
-    def home(self):
-        self.change("Home")        
-    # calls the logout page processor
-    def log_o(self):
-        self.change("Log Out")
-    # calls the profile page processor
-    def profile(self):
-        self.change("Profile")
+    
     
     # to clear the frame
     def change(self, parent):
+        
         self.selected = parent
         #clearing the main frame
         for frames  in self.main_page.winfo_children():
@@ -110,6 +100,7 @@ class LoggedIn:
     # write things that goes in to side bar
     def side_bar_handler(self):
         #make the page that is active visible and recreate them
+        
         self.frame_dictionary = {}
         for frames in self.menus.keys():
             self.frame_dictionary[frames] = CTkScrollableFrame(master=self.main_page, fg_color="white")
@@ -119,8 +110,10 @@ class LoggedIn:
         # recreate the buttons
         #list of menu lists for now
         self.menus_items = {}
+        
         for item in self.menus.keys():
             self.menus_items[item] = CTkButton(master=self.side_bar, text=item, fg_color="transparent",text_color="white", hover_color="#0088ff", command=self.menus[item],border_spacing=0)
+
         #self.side_bar.option_clear()
         for i in self.menus_items.keys():
             if i == self.selected:
@@ -133,11 +126,27 @@ class LoggedIn:
     def home_page(self, parent):
         pass
     def dev_page(self, parent):
-        for i in range(10):
-            self.single_dev(self.frame_dictionary[self.selected], "Cheraaaaaaa", "cheriyye")
-    def profile_page(self, parent):
         pass
+    def profile_page(self, parent):
+        infos = {"user_age":"Age", "user_gender":"Gender", "p_lang":"Programming Language",  "organization":"Work Place"}
+        inputs = {}
+        for i in infos.keys():
+            inputs[i] = CTkEntry(master=parent, placeholder_text=infos[i])
+            inputs[i].pack(ipadx=50,ipady=5,padx=10,pady=10,expand=False, side=tk.TOP)
+        warning = CTkLabel(master=parent, text="If You have already entered your info before know that it will be overwritten", text_color="red")
+        warning.pack(side=tk.TOP, pady=10)
+        add_info = CTkButton(master=parent, text="Update/Enter", command=lambda:self.update_info(inputs))
+        add_info.pack(side=tk.TOP, pady=10)
     def log_out_page(self, parent):
+        warning = CTkLabel(master=parent, text="Are you sure you wanna log out!", text_color="red")
+        warning.pack(side=tk.TOP, pady=10)
+        yes = CTkButton(master=parent, text="YES", fg_color="#170A17", command=self.log_out)
+        yes.pack(side=tk.TOP, pady=10)
+        no = CTkButton(master=parent, text="No", fg_color="#170A17", command=lambda:self.change("Home"))
+        no.pack(side=tk.TOP, pady=10)
+    def log_out(self):
+        pass
+    def update_info(self, inputs):
         pass
     def single_dev(self, parent, name, user_name,  url="dev_icon.png"):
         frame_holder = CTkFrame(master=parent, fg_color="transparent")
@@ -180,6 +189,6 @@ class LoggedIn:
                     continue
 
             frames_to_dis[i].pack(fill=tk.X, expand=False,side=tk.TOP)
-        frame.pack(expand=False, padx=10, pady=10,side=tk.LEFT)
+        frame.pack(expand=False, padx=10, pady=10,ipadx=80,side=tk.LEFT)
         frame_holder.pack(expand=False, fill=tk.X, side=tk.TOP)
         
