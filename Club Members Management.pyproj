@@ -23,7 +23,9 @@
   <ItemGroup>
     <Compile Include="actions.py" />
     <Compile Include="Admin.py" />
+    <Compile Include="app_constants.py" />
     <Compile Include="Club_Members_Management.py" />
+    <Compile Include="db_manager.py" />
     <Compile Include="LoggedIn.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

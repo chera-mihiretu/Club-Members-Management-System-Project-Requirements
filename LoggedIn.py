@@ -2,6 +2,7 @@ from customtkinter import CTkFrame, CTkEntry, CTkButton, CTkInputDialog, CTkScro
 from PIL import Image
 import tkinter as tk
 import os
+import app_constants as ac
 ###################################################
 ########### Create Inv for users ##################
 ###################################################
@@ -13,8 +14,8 @@ class LoggedIn:
         self.frame_dictionary = {}
         self.menus_items = {}
         # creating the pages
-        self.side_bar = CTkFrame(master=parent, fg_color="#1A0301")
-        self.main_page = CTkFrame(master=parent,fg_color="white" )
+        self.side_bar = CTkFrame(master=parent, fg_color=ac.FG_COLOR, corner_radius=0)
+        self.main_page = CTkFrame(master=parent,fg_color=ac.WHITE_BG, corner_radius=10)
         self.menus = {"Home":lambda:self.change("Home"), "Developers":lambda:self.change("Developers"), "Profile":lambda:self.change("Profile"), "Log Out":lambda:self.change("Log Out")}
         self.menus_page = {"Home":self.home_page, "Developers":self.dev_page, "Profile":self.profile_page, "Log Out":self.log_out_page}
         
@@ -22,9 +23,9 @@ class LoggedIn:
 
     def show(self):
         # placing the pages
-        self.side_bar.pack(fill=tk.Y, side=tk.LEFT, padx=5)
+        self.side_bar.pack(fill=tk.Y, side=tk.LEFT)
         self.side_bar.configure(width=200)
-        self.main_page.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT, padx=5)
+        self.main_page.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT, padx=5, pady=5)
         #where things are added to the frames
         self.side_bar_handler()
     
@@ -48,7 +49,7 @@ class LoggedIn:
         
         self.frame_dictionary = {}
         for frames in self.menus.keys():
-            self.frame_dictionary[frames] = CTkScrollableFrame(master=self.main_page, fg_color="white")
+            self.frame_dictionary[frames] = CTkScrollableFrame(master=self.main_page, fg_color=ac.WHITE_BG)
             if frames == self.selected:
                 self.frame_dictionary[frames].pack(fill=tk.BOTH, expand=True)
         self.menus_page[self.selected](self.frame_dictionary[self.selected])
@@ -57,12 +58,16 @@ class LoggedIn:
         self.menus_items = {}
         
         for item in self.menus.keys():
-            self.menus_items[item] = CTkButton(master=self.side_bar, text=item, fg_color="transparent",text_color="white", hover_color="#0088ff", command=self.menus[item],border_spacing=0)
+            
+            if item == self.selected:
+                self.menus_items[item] = CTkButton(master=self.side_bar, text=item, fg_color=ac.BLUE_BG,text_color=ac.WHITE_BG, hover_color=ac.BLUE_BG, command=self.menus[item],border_spacing=0)
+                continue
+            self.menus_items[item] = CTkButton(master=self.side_bar, text=item, fg_color="transparent",text_color=ac.WHITE_BG, hover_color=ac.BLUE_BG, command=self.menus[item],border_spacing=0)
 
         #self.side_bar.option_clear()
         for i in self.menus_items.keys():
             if i == self.selected:
-                self.menus_items[i]._bg_color = "#0088ff"
+                self.menus_items[i]._bg_color = ac.BLUE_BG
             self.menus_items[i].pack(fill=tk.X, side=tk.TOP, pady=5, padx=5)
 
     ##################################################################
@@ -85,9 +90,9 @@ class LoggedIn:
     def log_out_page(self, parent):
         warning = CTkLabel(master=parent, text="Are you sure you wanna log out!", text_color="red")
         warning.pack(side=tk.TOP, pady=10)
-        yes = CTkButton(master=parent, text="YES", fg_color="#170A17", command=self.log_out)
+        yes = CTkButton(master=parent, text="YES", fg_color=ac.FG_COLOR, command=self.log_out)
         yes.pack(side=tk.TOP, pady=10)
-        no = CTkButton(master=parent, text="No", fg_color="#170A17", command=lambda:self.change("Home"))
+        no = CTkButton(master=parent, text="No", fg_color=ac.FG_COLOR, command=lambda:self.change("Home"))
         no.pack(side=tk.TOP, pady=10)
     def log_out(self):
         self.parent.log_out()
@@ -95,11 +100,11 @@ class LoggedIn:
         pass
     def single_dev(self, parent, name, user_name,  url="dev_icon.png"):
         frame_holder = CTkFrame(master=parent, fg_color="transparent")
-        frame = CTkFrame(master=frame_holder,fg_color="#170A17")
+        frame = CTkFrame(master=frame_holder,fg_color=ac.FG_COLOR)
         frame_info = CTkFrame(master=frame, fg_color="transparent")
         
-        name = CTkLabel(master=frame_info, text=name, font=("Normal", 12), text_color="white")
-        user_name = CTkLabel(master=frame_info, text="@"+user_name, font=("Normal", 12), text_color="white")
+        name = CTkLabel(master=frame_info, text=name, font=("Normal", 12), text_color=ac.WHITE_BG)
+        user_name = CTkLabel(master=frame_info, text="@"+user_name, font=("Normal", 12), text_color=ac.WHITE_BG)
         name.pack(expand=False, padx=5, pady=5, side=tk.TOP)
         user_name.pack(expand=False, padx=5, pady=5, side=tk.TOP)
         img = CTkImage(light_image=Image.open(url), size=(40,40))
@@ -116,11 +121,11 @@ class LoggedIn:
         file_exist = os.path.exists(url)
         #create a page to display all posted ifos
         frame_holder = CTkFrame(master=parent, fg_color="transparent",bg_color="transparent")
-        frame = CTkFrame(master=frame_holder, fg_color="#170A17", corner_radius=10,bg_color="transparent")
+        frame = CTkFrame(master=frame_holder, fg_color=ac.FG_COLOR, corner_radius=10,bg_color="transparent")
         frames_to_dis = [CTkFrame(master=frame, fg_color="transparent",bg_color="transparent") for i in range(3)]
-        t_text = CTkLabel(master=frames_to_dis[0], text=title, text_color="white",bg_color="transparent",font=("Bold", 15))
+        t_text = CTkLabel(master=frames_to_dis[0], text=title, text_color=ac.WHITE_BG,bg_color="transparent",font=("Bold", 15))
         t_text.pack(padx=10,expand=False, side=tk.LEFT)
-        m_text = CTkLabel(master=frames_to_dis[1], text=desc, text_color="white",bg_color="transparent",font=("Normal", 10), justify=tk.LEFT)
+        m_text = CTkLabel(master=frames_to_dis[1], text=desc, text_color=ac.WHITE_BG,bg_color="transparent",font=("Normal", 10), justify=tk.LEFT)
         m_text.pack(padx=10,expand=False, side=tk.LEFT)
         #viw an image if the image is posted
         img = None

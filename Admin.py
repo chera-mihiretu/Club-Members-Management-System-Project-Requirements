@@ -1,12 +1,13 @@
 from customtkinter import *
 import tkinter as tk 
 from PIL import Image
+import app_constants as ac
 class Admin:
     def __init__(self, parent):
         self.parent = parent
         # creating the pages
-        self.side_bar = CTkFrame(master=parent, fg_color="#1A0301")
-        self.main_page = CTkFrame(master=parent,fg_color="white" )
+        self.side_bar = CTkFrame(master=parent, fg_color=ac.FG_COLOR, corner_radius=0)
+        self.main_page = CTkFrame(master=parent,fg_color=ac.WHITE_BG, corner_radius=10)
 
 
         #selected item to view
@@ -21,7 +22,7 @@ class Admin:
 
     def show(self):
         # placing the pages
-        self.side_bar.pack(fill=tk.X, side=tk.TOP, padx=5)
+        self.side_bar.pack(fill=tk.X, side=tk.TOP, ipadx=5, ipady=5)
         self.side_bar.configure(height=40)
         self.main_page.pack(fill=tk.BOTH, expand=True, side=tk.TOP, padx=5)
         #where things are added to the frames
@@ -41,7 +42,7 @@ class Admin:
         
         self.frame_dictionary = {}
         for frames in self.menus.keys():
-            self.frame_dictionary[frames] = CTkScrollableFrame(master=self.main_page, fg_color="white", scrollbar_button_color="#170A17")
+            self.frame_dictionary[frames] = CTkScrollableFrame(master=self.main_page, fg_color=ac.WHITE_BG, scrollbar_button_color=ac.FG_COLOR)
             if frames == self.selected:
                 self.frame_dictionary[frames].pack(fill=tk.BOTH, expand=True)
         self.menus_page[self.selected](self.frame_dictionary[self.selected])
@@ -50,15 +51,23 @@ class Admin:
         self.menus_items = {}
         
         for item in self.menus.keys():
-            self.menus_items[item] = CTkButton(master=self.side_bar, text=item, fg_color="transparent",text_color="white", hover_color="#0088ff", command=self.menus[item],border_spacing=0)
+            if item == self.selected:
+                self.menus_items[item] = CTkButton(master=self.side_bar, text=item, 
+                                                  fg_color=ac.BLUE_BG,text_color=ac.WHITE_BG, hover_color=ac.BLUE_BG, 
+                                                   command=self.menus[item],border_spacing=0)
+                continue
+            self.menus_items[item] = CTkButton(master=self.side_bar, text=item, 
+                                               fg_color="transparent",text_color=ac.WHITE_BG, hover_color=ac.BLUE_BG, 
+                                               command=self.menus[item],border_spacing=0)
 
         #self.side_bar.option_clear()
         for i in self.menus_items.keys():
             if i == self.selected:
-                self.menus_items[i]._bg_color = "#0088ff"
+                self.menus_items[i]._bg_color = ac.BLUE_BG
             self.menus_items[i].pack(fill=tk.X, side=tk.LEFT, pady=5)
     def dev_page(self, parent):
-        pass
+        for i in range(23):
+            self.single_dev(self.frame_dictionary[self.selected], name="abdi", user_name_text="chera")
     def post_page(self, parent):
         pass
     def create_post(self, parent):
@@ -67,7 +76,7 @@ class Admin:
         #post desc label
         desc = CTkLabel(master=parent, text="Desc...")
         #post desc input
-        post_desc = CTkTextbox(master=parent, scrollbar_button_color="#170A17", fg_color="#EDEDED")
+        post_desc = CTkTextbox(master=parent, scrollbar_button_color=ac.FG_COLOR, fg_color="white")
         #choosing a file if it has a file
         choose_pic = CTkButton(master=parent, text="Add Picture")
         file_path = CTkLabel(master=parent, text=choose_pic)
@@ -84,20 +93,20 @@ class Admin:
         #creating a wirning dialog when log out
         warning = CTkLabel(master=parent, text="Are you sure you wanna log out!", text_color="red")
         warning.pack(side=tk.TOP, pady=10)
-        yes = CTkButton(master=parent, text="YES", fg_color="#170A17", command=self.log_out)
+        yes = CTkButton(master=parent, text="YES", fg_color=ac.FG_COLOR, command=self.log_out)
         yes.pack(side=tk.TOP, pady=10)
-        no = CTkButton(master=parent, text="No", fg_color="#170A17", command=lambda:self.change("Developers"))
+        no = CTkButton(master=parent, text="No", fg_color=ac.FG_COLOR, command=lambda:self.change("Developers"))
         no.pack(side=tk.TOP, pady=10)
     def log_out(self):
         self.parent.log_out()
     def single_dev(self, parent, name, user_name_text,  url="dev_icon.png"):
         #create a frame a single that we can itrate through
         frame_holder = CTkFrame(master=parent, fg_color="transparent")
-        frame = CTkFrame(master=frame_holder,fg_color="#170A17")
+        frame = CTkFrame(master=frame_holder,fg_color=ac.FG_COLOR)
         frame_info = CTkFrame(master=frame, fg_color="transparent")
         #creating the components to display informations
-        name = CTkLabel(master=frame_info, text=name, font=("Normal", 12), text_color="white")
-        user_name = CTkLabel(master=frame_info, text="@"+user_name_text, font=("Normal", 12), text_color="white")
+        name = CTkLabel(master=frame_info, text=name, font=("Normal", 12), text_color=ac.WHITE_BG)
+        user_name = CTkLabel(master=frame_info, text="@"+user_name_text, font=("Normal", 12), text_color=ac.WHITE_BG)
         img = CTkImage(light_image=Image.open(url), size=(40,40))
         img_= CTkLabel(master=frame, image=img, text="")
         #delete button to remove a developer from a database
@@ -120,11 +129,11 @@ class Admin:
         file_exist = os.path.exists(url)
         #create a page to display all posted ifos
         frame_holder = CTkFrame(master=parent, fg_color="transparent",bg_color="transparent")
-        frame = CTkFrame(master=frame_holder, fg_color="#170A17", corner_radius=10,bg_color="transparent")
+        frame = CTkFrame(master=frame_holder, fg_color=ac.FG_COLOR, corner_radius=10,bg_color="transparent")
         frames_to_dis = [CTkFrame(master=frame, fg_color="transparent",bg_color="transparent") for i in range(3)]
-        t_text = CTkLabel(master=frames_to_dis[0], text=title, text_color="white",bg_color="transparent",font=("Bold", 15))
+        t_text = CTkLabel(master=frames_to_dis[0], text=title, text_color=ac.WHITE_BG,bg_color="transparent",font=("Bold", 15))
         t_text.pack(padx=10,expand=False, side=tk.LEFT)
-        m_text = CTkLabel(master=frames_to_dis[1], text=desc, text_color="white",bg_color="transparent",font=("Normal", 10), justify=tk.LEFT)
+        m_text = CTkLabel(master=frames_to_dis[1], text=desc, text_color=ac.WHITE_BG,bg_color="transparent",font=("Normal", 10), justify=tk.LEFT)
         m_text.pack(padx=10,expand=False, side=tk.LEFT)
         #viw an image if the image is posted
         img = None
