@@ -50,6 +50,33 @@ class DataBase:
                    ac.USERS_INFO_TABLE_ATTRIBUTES[2],
                    ac.USERS_INFO_TABLE_ATTRIBUTES[3],
                    ac.USERS_INFO_TABLE_ATTRIBUTES[4]))
+    # check if user exists
+    def user_exist(self, user_name, password):
+        
+        value = self.cursor.execute("""
+            SELECT {}, {}  FROM {}
+            WHERE {} = "{}"
+        """.format(ac.USER_TABLE_ATTRIBUTE[0],
+                   ac.USER_TABLE_ATTRIBUTE[3],
+                   ac.USER_TABLE, 
+                   ac.USER_TABLE_ATTRIBUTE[0], 
+                   user_name))
+        value = value.fetchall()
+        print("""
+            SELECT {}, {}  FROM {}
+            WHERE {} = "{}"
+        """.format(ac.USER_TABLE_ATTRIBUTE[0],
+                   ac.USER_TABLE_ATTRIBUTE[3],
+                   ac.USER_TABLE, 
+                   ac.USER_TABLE_ATTRIBUTE[0], 
+                   user_name))
+        if value == []:
+            return False
+        elif value == [(user_name, password)]:
+            return True
+        return False
+        
+
     #close the database
     def close_db(self):
         self.connection.commit
@@ -58,4 +85,5 @@ class DataBase:
     # close when the object is destroyed in any case
     def __del__(self):
         self.close_db()
+
        

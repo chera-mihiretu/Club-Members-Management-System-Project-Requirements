@@ -1,3 +1,4 @@
+from wsgiref import validate
 import app_constants as ac
 from doctest import master
 from turtle import width
@@ -7,7 +8,7 @@ from PIL import Image
 from LoggedIn import *
 from Admin import *
 from db_manager import DataBase
-
+import validator as vald
 class AUTH(CTkFrame):
     def __init__(self, parent):
         CTkFrame.__init__(self, master=parent)
@@ -28,6 +29,8 @@ class AUTH(CTkFrame):
         self.pack(fill=tk.BOTH, expand=True)
 
     def show(self):
+        for frames in self.winfo_children():
+            frames.destroy()
         if not self.on_log_in and not self.admin:
             self.log_in_frame()
             self.pack(fill=tk.BOTH, expand=True)
@@ -37,12 +40,22 @@ class AUTH(CTkFrame):
         elif self.on_log_in:
             self.user_page = LoggedIn(self)
             self.user_page.show()
-        
-    def check(self):
-        print("done")
-        
+    
+    def log_in_fun(self, user_name, pass_word):
+        # validating the user input
+        try:
+            vald.six_less_validator(user_name, "User Name")
+            vald.six_less_validator(pass_word, "Password")
+            
+            if self.data_base.user_exist(user_name, pass_word):
+                self.on_log_in = True
+                self.admin = False
+                self.show()
+                file = open("cmm.data", "w")
+                file.write(user_name+ " " +pass_word)
+        except vald.ValidationError as e:
+            print (e)
 
-        
         
     #create the log frame
     def log_in_frame(self):
@@ -50,7 +63,7 @@ class AUTH(CTkFrame):
         self.log_in = CTkFrame(master=self, fg_color=ac.WHITE_BG)
         user_name = CTkEntry(master=self.log_in, placeholder_text="User Name")
         pass_word = CTkEntry(master=self.log_in, placeholder_text="Password")
-        log_in = CTkButton(master=self.log_in, text="Log In")
+        log_in = CTkButton(master=self.log_in, text="Log In", command=lambda:self.log_in_fun(user_name.get(), pass_word.get()))
         no_acc = CTkButton(master=self.log_in, text="Have No Account", command=self.change_frame,  hover_color=ac.HOVER_COLOR,text_color="black",fg_color="transparent", border_spacing=2)
         #placing the contents
         user_name.place(relx=.5, rely=.3, anchor="center")
