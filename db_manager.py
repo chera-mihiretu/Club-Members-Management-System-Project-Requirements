@@ -11,7 +11,9 @@ class DataBase:
         self.cursor = self.connection.cursor()
         
         self.create_neccesary_table_if_not_exist()
-       
+    ###############################################################
+    ################## start by creating default tables ###########
+    ###############################################################
     def create_neccesary_table_if_not_exist(self):
         self.cursor.execute("""
            CREATE TABLE IF NOT EXISTS {} (
@@ -42,7 +44,6 @@ class DataBase:
         CREATE TABLE IF NOT EXISTS {} (
             {} TEXT UNIQUE PRIMARY KEY NOT NULL,
             {} INTEGER,
-            {} CHAR,
             {} TEXT,
             {} TEXT
            ); 
@@ -50,8 +51,8 @@ class DataBase:
                    ac.USERS_INFO_TABLE_ATTRIBUTES[0],
                    ac.USERS_INFO_TABLE_ATTRIBUTES[1],
                    ac.USERS_INFO_TABLE_ATTRIBUTES[2],
-                   ac.USERS_INFO_TABLE_ATTRIBUTES[3],
-                   ac.USERS_INFO_TABLE_ATTRIBUTES[4]))
+                   ac.USERS_INFO_TABLE_ATTRIBUTES[3]))
+        self.commit()
     # check if user exists
     def user_exist(self, user_name, password):
         
@@ -67,7 +68,7 @@ class DataBase:
         print(value)
         print([(user_name, "{}".format(crpt.hash_it(password)))])
         if value == []:
-            return False
+            raise vald.DatabaseError("No such user found, Please check your inputs")
         elif value == [(user_name, "{}".format(crpt.hash_it(password)))]:
             return True
         raise vald.DatabaseError("No such user found, Please check your inputs")
@@ -87,10 +88,72 @@ class DataBase:
             {ac.USER_TABLE_ATTRIBUTE[3]})
             VALUES ("{user_name}","{name}","{email}","{crpt.hash_it(pass_word)}")
         """)
+        self.commit()
+    #extract posts from database
+    def extract_post(self):
+        self.cursor.execute(f"""
+            SELECT * FROM {ac.POST_TABLE}
+        """)
+
+        value =  self.cursor.fetchall()
+        if value == []:
+            print("database is empty")
+        return value
+    #extract developer from database
+    def extract_devs(self):
+        self.cursor.execute(f"""
+            SELECT {ac.USER_TABLE_ATTRIBUTE[0]}, 
+            {ac.USER_TABLE_ATTRIBUTE[1]},
+            {ac.USER_TABLE_ATTRIBUTE[2]} FROM {ac.USER_TABLE}
+        """)
+
+        value =  self.cursor.fetchall()
+        if value == []:
+            print("database is empty")
+        
+        return value
+       
+    #adding more information to user
+    def add_more_info(self, user_name, user_age, prog_lang, organ):
+        value = self.cursor.execute(f"""
+        SELECT * FROM Users_Info
+        WHERE "{ac.USERS_INFO_TABLE_ATTRIBUTES[0]}" = "{user_name}"
+        """).fetchall()
+        
+        if value == []:
+            self.cursor.execute(f"""
+                INSERT INTO "{ac.USERS_INFO_TABLE}" (
+                "{ac.USERS_INFO_TABLE_ATTRIBUTES[0]}",
+                "{ac.USERS_INFO_TABLE_ATTRIBUTES[1]}",
+                "{ac.USERS_INFO_TABLE_ATTRIBUTES[2]}",
+                "{ac.USERS_INFO_TABLE_ATTRIBUTES[3]}")
+                VALUES("{user_name}",
+                {user_age}, "{prog_lang}", "{organ}")
+                """)
+            print("inserted")
+            self.commit()
+            return
+       
+        self.cursor.execute(f"""
+            UPDATE {ac.USERS_INFO_TABLE}
+            SET 
+            {ac.USERS_INFO_TABLE_ATTRIBUTES[0]}="{user_name}",
+            {ac.USERS_INFO_TABLE_ATTRIBUTES[1]}="{user_age}",
+            {ac.USERS_INFO_TABLE_ATTRIBUTES[2]}="{prog_lang}",
+            {ac.USERS_INFO_TABLE_ATTRIBUTES[3]}="{organ}"
+            WHERE {ac.USERS_INFO_TABLE_ATTRIBUTES[0]} = "{user_name}"
+         
+        """)
+        print("updated")
 
 
+        self.commit()
+       
     #close the database
+    def commit(self):
+        self.connection.commit()
     def close_db(self):
+        
         self.connection.commit
         self.connection.close()
 

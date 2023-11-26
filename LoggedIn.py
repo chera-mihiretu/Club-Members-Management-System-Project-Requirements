@@ -3,12 +3,16 @@ from PIL import Image
 import tkinter as tk
 import os
 import app_constants as ac
+import validator as vald
 ###################################################
 ########### Create Inv for users ##################
 ###################################################
 class LoggedIn:
-    def __init__(self, parent):
+    def __init__(self, parent, database, status):
+
         #selected item to view
+        self.status = status
+        self.database = database
         self.parent = parent
         self.selected = "Home"
         self.frame_dictionary = {}
@@ -74,18 +78,25 @@ class LoggedIn:
     ######################create page contents########################
     ##################################################################
     def home_page(self, parent):
-        pass
+        value = self.database.extract_post()
+        if value != []:
+            for post_id, post_title, post_desc, url in value:
+                self.single_post(self.frame_dictionary[self.selected], 
+                                 post_id, post_desc, url)
     def dev_page(self, parent):
-        pass
+        value = self.database.extract_devs()
+        if value != []:
+            for user_name, name,email in value:
+                self.single_dev(self.frame_dictionary[self.selected], name, user_name, ac.DEV_ICON)
     def profile_page(self, parent):
-        infos = {"user_age":"Age", "user_gender":"Gender", "p_lang":"Programming Language",  "organization":"Work Place"}
+        infos = {"user_age":"Age", "user_p_l":"Programming Language",  "user_work_place":"Work Place"}
         inputs = {}
         for i in infos.keys():
             inputs[i] = CTkEntry(master=parent, placeholder_text=infos[i])
             inputs[i].pack(ipadx=50,ipady=5,padx=10,pady=10,expand=False, side=tk.TOP)
         warning = CTkLabel(master=parent, text="If You have already entered your info before know that it will be overwritten", text_color="red")
         warning.pack(side=tk.TOP, pady=10)
-        add_info = CTkButton(master=parent, text="Update/Enter", command=lambda:self.update_info(inputs))
+        add_info = CTkButton(master=parent, text="Update/Enter", command=lambda:self.update_info( inputs))
         add_info.pack(side=tk.TOP, pady=10)
     def log_out_page(self, parent):
         warning = CTkLabel(master=parent, text="Are you sure you wanna log out!", text_color="red")
@@ -97,7 +108,12 @@ class LoggedIn:
     def log_out(self):
         self.parent.log_out()
     def update_info(self, inputs):
-        pass
+        
+        self.database.add_more_info(self.status.get_user_name(),
+                                    inputs[ac.USERS_INFO_TABLE_ATTRIBUTES[1]].get(),
+                                    inputs[ac.USERS_INFO_TABLE_ATTRIBUTES[2]].get(),
+                                    inputs[ac.USERS_INFO_TABLE_ATTRIBUTES[3]].get())
+
     def single_dev(self, parent, name, user_name,  url="dev_icon.png"):
         frame_holder = CTkFrame(master=parent, fg_color="transparent")
         frame = CTkFrame(master=frame_holder,fg_color=ac.FG_COLOR)

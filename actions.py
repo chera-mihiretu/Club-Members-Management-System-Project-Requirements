@@ -46,10 +46,10 @@ class AUTH(CTkFrame):
             self.log_in_frame()
             self.pack(fill=tk.BOTH, expand=True)
         elif self.admin:
-            self.admin_page = Admin(self)
+            self.admin_page = Admin(self, self.data_base, self.status)
             self.admin_page.show()
         elif self.on_log_in:
-            self.user_page = LoggedIn(self)
+            self.user_page = LoggedIn(self, self.data_base, self.status)
             self.user_page.show()
     
     def log_in_fun(self, user_name, pass_word):
@@ -70,7 +70,7 @@ class AUTH(CTkFrame):
     def log_in_fun_from_file(self, user_name, pass_word):
         # validating the user input
         try:
-            vald.user_name_validator(user_name, "User Name")
+            vald.user_name_validator(user_name)
             vald.six_less_validator(pass_word, "Password")
             #check if the user exist on a database
             try: 
@@ -138,9 +138,9 @@ class AUTH(CTkFrame):
     def sign_up_frame(self):
         #create contents
         self.sign_up = CTkFrame(master=self, fg_color=ac.WHITE_BG)
+        name = CTkEntry(master=self.sign_up, placeholder_text="Full Name")
         user_name = CTkEntry(master=self.sign_up, placeholder_text="User Name")
         email = CTkEntry(master=self.sign_up, placeholder_text="Email")
-        name = CTkEntry(master=self.sign_up, placeholder_text="Full Name")
         pass_word = CTkEntry(master=self.sign_up, placeholder_text="Password")
         confirm_pass_word = CTkEntry(master=self.sign_up, placeholder_text="Confirm Password")
         log_in = CTkButton(master=self.sign_up, text="Sign Up", command=lambda:self.sign_up_fun(name.get(), user_name.get(),  email.get(), pass_word.get(), confirm_pass_word.get()))

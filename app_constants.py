@@ -7,6 +7,7 @@ HOVER_COLOR = "#DB9167"
 WHITE_BG = "#E7E7FC"
 BLUE_BG = "#0088FF"
 TITLE = "CMM"
+DEV_ICON = "dev_icon.png"
 WINDOW_SIZE = "600x400"
 FRAME_X:int = 600
 FRAME_Y:int = 400
@@ -16,7 +17,7 @@ POST_TABLE = "Posts"
 USERS_INFO_TABLE = "Users_Info"
 USER_TABLE_ATTRIBUTE = ["user_name", "full_name", "email", "user_password"]
 POST_TABLE_ATTRIBUTE = ["post_id", "post_title", "post_desc", "url"]
-USERS_INFO_TABLE_ATTRIBUTES = ["user_name", "user_age", "user_gender", "user_p_l", "user_work_place"]
+USERS_INFO_TABLE_ATTRIBUTES = ["user_name", "user_age", "user_p_l", "user_work_place"]
 class Status:
     def __init__(self, user_name:str=None):
         self.__user_name = user_name

@@ -3,9 +3,11 @@ import tkinter as tk
 from PIL import Image
 import app_constants as ac
 class Admin:
-    def __init__(self, parent):
+    def __init__(self, parent, database, status):
         self.parent = parent
         # creating the pages
+        self.database = database
+        self.status = status
         self.side_bar = CTkFrame(master=parent, fg_color=ac.FG_COLOR, corner_radius=0)
         self.main_page = CTkFrame(master=parent,fg_color=ac.WHITE_BG, corner_radius=10)
         
