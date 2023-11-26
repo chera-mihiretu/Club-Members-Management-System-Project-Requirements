@@ -1,3 +1,4 @@
+from atexit import register
 import sqlite3
 import math
 import app_constants as ac
@@ -53,6 +54,16 @@ class DataBase:
                    ac.USERS_INFO_TABLE_ATTRIBUTES[2],
                    ac.USERS_INFO_TABLE_ATTRIBUTES[3]))
         self.commit()
+        #######################################################
+        ##### just to make it easy admin password #############
+        #######################################################
+        try:
+            self.register_user("admin", "admin", "admin", "admin_password")
+        except vald.DatabaseError as e:
+            print(e)
+        self.connection.commit()
+
+        
     # check if user exists
     def user_exist(self, user_name, password):
         
@@ -89,6 +100,22 @@ class DataBase:
             VALUES ("{user_name}","{name}","{email}","{crpt.hash_it(pass_word)}")
         """)
         self.commit()
+    #delete a user from data base admin capability
+    def delete_user(self, user_name):
+        self.cursor.execute(f"""
+            DELETE FROM {ac.USER_TABLE} WHERE {ac.USER_TABLE_ATTRIBUTE[0]} = "{user_name}";
+        """)
+        self.connection.commit()
+        self.cursor.execute(f"""
+            SELECT * FROM {ac.USERS_INFO_TABLE} WHERE {ac.USERS_INFO_TABLE_ATTRIBUTES[0]}="{user_name}";
+        """)
+        if self.cursor.fetchall() == []:
+            return
+        self.cursor.execute(f"""
+            DELETE FROM {ac.USERS_INFO_TABLE} WHERE {ac.USERS_INFO_TABLE_ATTRIBUTES[0]} = "{user_name}";
+        """)
+        self.connection.commit()
+
     #extract posts from database
     def extract_post(self):
         self.cursor.execute(f"""
@@ -148,7 +175,23 @@ class DataBase:
 
 
         self.commit()
-       
+    # creating a post
+    def create_post(self, post_title, post_desc, url=""):
+        self.cursor.execute(f"""
+            INSERT INTO {ac.POST_TABLE} (
+            {ac.POST_TABLE_ATTRIBUTE[1]},
+            {ac.POST_TABLE_ATTRIBUTE[2]},
+            {ac.POST_TABLE_ATTRIBUTE[3]}
+            )
+            VALUES ("{post_title}", "{post_desc}", "{url}")
+        """)
+        self.connection.commit()
+    #deleting post 
+    def delete_post(self, p_id):
+        self.cursor.execute(f"""
+            DELETE FROM {ac.POST_TABLE} WHERE {ac.POST_TABLE_ATTRIBUTE[0]} = "{p_id}"
+        """)
+        self.connection.commit()
     #close the database
     def commit(self):
         self.connection.commit()

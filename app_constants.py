@@ -1,6 +1,7 @@
 ####################################################################
 # this is are some constants that are used through out the program #
 ####################################################################
+
 local_data_path = "cmm.data"
 FG_COLOR = "#170A17"
 HOVER_COLOR = "#DB9167"

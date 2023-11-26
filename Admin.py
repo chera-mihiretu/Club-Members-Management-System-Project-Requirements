@@ -1,7 +1,10 @@
+from xml.dom import ValidationErr
 from customtkinter import *
 import tkinter as tk 
+import validator as vald
 from PIL import Image
 import app_constants as ac
+import shutil
 class Admin:
     def __init__(self, parent, database, status):
         self.parent = parent
@@ -68,11 +71,19 @@ class Admin:
                 self.menus_items[i]._bg_color = ac.BLUE_BG
             self.menus_items[i].pack(fill=tk.X, side=tk.LEFT, pady=5)
     def dev_page(self, parent):
-        for i in range(23):
-            self.single_dev(self.frame_dictionary[self.selected], name="abdi", user_name_text="chera")
+        devs = self.database.extract_devs()
+        for user_name, full_name, email in devs:
+            if user_name == self.status.get_user_name()or user_name == "admin":
+                    continue
+            self.single_dev(self.frame_dictionary[self.selected], full_name, user_name, ac.DEV_ICON)
     def post_page(self, parent):
-        pass
+        value = self.database.extract_post()
+        if value != []:
+            for post_id, post_title, post_desc, url in value:
+                self.single_post(self.frame_dictionary[self.selected], post_id,
+                                 post_title, post_desc, url)
     def create_post(self, parent):
+        self.url = None
         #creating a post inviroment
         post_title = CTkEntry(master=parent, placeholder_text="Title")
         #post desc label
@@ -80,15 +91,63 @@ class Admin:
         #post desc input
         post_desc = CTkTextbox(master=parent, scrollbar_button_color=ac.FG_COLOR, fg_color="white")
         #choosing a file if it has a file
-        choose_pic = CTkButton(master=parent, text="Add Picture")
+        
+        choose_pic = CTkButton(master=parent, text="Add Picture", command=self.select_file)
+        
         file_path = CTkLabel(master=parent, text=choose_pic)
-        upload = CTkButton(master=parent, text="Upload")
+        upload = CTkButton(master=parent, text="Upload", command=lambda:self.new_post(post_title.get(), post_desc.get(1.0, "end-1c")))
         post_title.pack(side=tk.TOP, pady=10, ipadx=100)
         #adding the components to the frame
         desc.pack(side=tk.TOP, ipadx=80)
         post_desc.pack(side=tk.TOP, ipadx=60)
         choose_pic.pack(side=tk.TOP, pady=10)
         upload.pack(side=tk.TOP, pady=10)
+        print(self.url)
+    #setting the url
+    def select_file(self):
+        self.url  = tk.filedialog.askopenfilename()
+        dialog = CTkInputDialog(title="Path",text=self.url)
+
+        
+        
+    def new_post(self, post_title:str, post_desc:str):
+        try:
+            vald.six_less_validator(post_title, "Post Title")
+            vald.ten_less_validator(post_desc, "Description")
+            # to avoid file with the same name to overload we rename the file #
+            if os.path.exists(self.url):
+                temp_url = None
+                if not os.path.exists(os.getcwd()+"\\images\\"):
+                    os.mkdir(os.getcwd()+"\\images\\")
+                for i in range(-1, -len(self.url), -1):
+                    if self.url[i] == "\\" or self.url[i] == "/":
+                        temp_url = self.url[i:]
+                        break
+
+                
+                
+                while os.path.exists(os.getcwd()+"\\images\\"+temp_url):
+                    for i in range(-1, -len(temp_url), -1):
+                        if temp_url[i] == ".":
+                            temp_url = temp_url[:i]+"cp"+temp_url[i:]
+                            print(temp_url)
+                if not os.path.exists(os.getcwd()+"\\images\\"+temp_url):
+                    shutil.copy(self.url, os.getcwd()+"\\images\\"+temp_url)
+                    
+                
+                
+                for i in range(-1, -(len(self.url)+1), -1):
+                    if self.url[i] == "\\":
+                        self.url = "\\images\\" + self.url[i:]
+                        break
+            else:
+                self.url = ""
+            self.database.create_post(post_title, post_desc, self.url)
+            self.change("Posts")
+           
+        except vald.ValidationError as e:
+            print(e)
+
 
 
     def log_out_page(self, parent):
@@ -124,9 +183,9 @@ class Admin:
         frame_holder.pack(expand=False, padx=10, pady = 10, side=tk.TOP, fill=tk.X)
     # deleting a user from database
     def delete_user(self, holder, user_name):
-        print(user_name)
+        self.database.delete_user(user_name)
         holder.destroy()
-    def single_post(self, parent,title="", desc="", url=""):
+    def single_post(self, parent,post_id, title="", desc="", url=""):
         #check if the image actually exists
         file_exist = os.path.exists(url)
         #create a page to display all posted ifos
@@ -149,13 +208,14 @@ class Admin:
                     continue
 
             frames_to_dis[i].pack(fill=tk.X, expand=False,side=tk.TOP)
-        delete = CTkButton(master=frame, text="Delete", command=lambda:self.delete_post(frame_holder, title))
-        delete.pack(side=tk.TOP, padx=10,pady=10)
+        delete = CTkButton(master=frame, text="Delete", command=lambda:self.delete_post(frame_holder, post_id))
+        if not title == "Welcome...    ":
+            delete.pack(side=tk.TOP, padx=10,pady=10)
         frame.pack(expand=False, padx=10, pady=10,ipadx=80,side=tk.LEFT)
         frame_holder.pack(expand=False, fill=tk.X, side=tk.TOP)
     #to delete a given post
-    def delete_post(self, holder, title):
-        print(title)
+    def delete_post(self, holder, post_id):
+        self.database.delete_post(post_id)
         holder.destroy()
 
     

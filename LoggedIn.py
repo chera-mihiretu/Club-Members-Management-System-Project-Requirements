@@ -82,11 +82,13 @@ class LoggedIn:
         if value != []:
             for post_id, post_title, post_desc, url in value:
                 self.single_post(self.frame_dictionary[self.selected], 
-                                 post_id, post_desc, url)
+                                 post_id, post_title,post_desc, url)
     def dev_page(self, parent):
         value = self.database.extract_devs()
         if value != []:
             for user_name, name,email in value:
+                if user_name == self.status.get_user_name() or user_name=="admin":
+                    continue
                 self.single_dev(self.frame_dictionary[self.selected], name, user_name, ac.DEV_ICON)
     def profile_page(self, parent):
         infos = {"user_age":"Age", "user_p_l":"Programming Language",  "user_work_place":"Work Place"}
@@ -132,7 +134,7 @@ class LoggedIn:
         frame_holder.pack(expand=False, padx=10, pady = 10, side=tk.TOP, fill=tk.X)
 
 
-    def single_post(self, parent,title="", desc="", url=""):
+    def single_post(self, parent,post_id, title="", desc="", url=""):
         #check if the image actually exists
         file_exist = os.path.exists(url)
         #create a page to display all posted ifos

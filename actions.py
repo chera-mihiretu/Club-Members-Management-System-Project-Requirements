@@ -21,7 +21,7 @@ class AUTH(CTkFrame):
         
         ### create the sign up and log in page
         self.on_log_in = False
-        self.admin = False
+        self.admin = True
         self.parent = parent
         
         #self.main_frame=CTkFrame(master=parent)
@@ -52,16 +52,20 @@ class AUTH(CTkFrame):
             self.user_page = LoggedIn(self, self.data_base, self.status)
             self.user_page.show()
     
-    def log_in_fun(self, user_name, pass_word):
+    def log_in_fun(self, user_name, pass_word, user:bool=True):
         # validating the user input
         try:
-            vald.six_less_validator(user_name, "User Name")
+            if user:
+                vald.six_less_validator(user_name, "User Name")
             vald.six_less_validator(pass_word, "Password")
             #check if the user exist on a database
             try: 
                 self.data_base.user_exist(user_name, pass_word)
                 #changing frame and changing statuses
-                self.set_user(user_name=user_name, pass_word=pass_word)
+                if user:
+                    self.set_user(user_name=user_name, pass_word=pass_word)
+                else:
+                    self.set_admin()
             except vald.DatabaseError as e:
                 print (e)
         except vald.ValidationError as e:
@@ -70,16 +74,25 @@ class AUTH(CTkFrame):
     def log_in_fun_from_file(self, user_name, pass_word):
         # validating the user input
         try:
+            
             vald.user_name_validator(user_name)
+            
             vald.six_less_validator(pass_word, "Password")
             #check if the user exist on a database
             try: 
                 self.data_base.user_exist(user_name, pass_word)
+                
                 self.set_user(user_name=user_name, pass_word=pass_word)
+                
             except vald.DatabaseError as e:
                 print(e)
         except vald.ValidationError as e:
             print (e)
+    def set_admin(self):
+        self.on_log_in = False
+        self.admin = True
+        self.status.set_user_name("admin")
+        self.show()
     #signing up    
     def set_user(self, user_name, pass_word):
         self.on_log_in = True
@@ -130,7 +143,9 @@ class AUTH(CTkFrame):
         self.log_in.pack(fill=tk.BOTH, expand=True)
     def admin_log_in(self):
         dialog = CTkInputDialog(title="Admin", text="Password")
-        
+        pass_word = dialog.get_input()
+        if pass_word != None:
+            self.log_in_fun("admin", pass_word, False)
     def admin_btn(self, parent):
         self.admin = CTkButton(master=parent, text="Admin", fg_color="transparent", text_color="black", border_color=ac.FG_COLOR, hover_color=ac.HOVER_COLOR,border_width=1,command=self.admin_log_in)
         self.admin.place(relx=.9, rely=.1, anchor="center")
