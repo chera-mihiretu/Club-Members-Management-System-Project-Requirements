@@ -2,6 +2,7 @@ import sqlite3
 import math
 import app_constants as ac
 import encrption as crpt
+import validator as vald
 class DataBase:
     def __init__(self):
 
@@ -69,8 +70,24 @@ class DataBase:
             return False
         elif value == [(user_name, "{}".format(crpt.hash_it(password)))]:
             return True
-        return False
+        raise vald.DatabaseError("No such user found, Please check your inputs")
+    #register user
+    def register_user(self, name, user_name, email, pass_word):
+        value = self.cursor.execute(f"""
+            SELECT {ac.USER_TABLE_ATTRIBUTE[0]} FROM {ac.USER_TABLE}
+            WHERE {ac.USER_TABLE_ATTRIBUTE[0]} = "{user_name}" or {ac.USER_TABLE_ATTRIBUTE[2]} = "{email}"
+        """).fetchall()
+        if value != []:
+            raise vald.DatabaseError("We found user with same user name or email please change the email or user_name")
         
+        self.cursor.execute(f"""
+            INSERT INTO {ac.USER_TABLE} ({ac.USER_TABLE_ATTRIBUTE[0]},
+            {ac.USER_TABLE_ATTRIBUTE[1]},
+            {ac.USER_TABLE_ATTRIBUTE[2]},
+            {ac.USER_TABLE_ATTRIBUTE[3]})
+            VALUES ("{user_name}","{name}","{email}","{crpt.hash_it(pass_word)}")
+        """)
+
 
     #close the database
     def close_db(self):

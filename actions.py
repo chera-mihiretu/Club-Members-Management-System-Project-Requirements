@@ -17,6 +17,7 @@ class AUTH(CTkFrame):
         self.data_base = DataBase()
         # check status of user or admin
         self.status = ac.Status()
+
         
         ### create the sign up and log in page
         self.on_log_in = False
@@ -28,7 +29,16 @@ class AUTH(CTkFrame):
         self.admin_page = None
         self.show()
         self.pack(fill=tk.BOTH, expand=True)
-
+        # check if user has logged in locally
+        if os.path.exists(ac.local_data_path):
+            file = open(ac.local_data_path, "r")
+            r = file.read()
+            r = r.split()
+            file.close()
+            try:
+                self.log_in_fun_from_file(r[0], r[1])
+            except IndexError as e:
+                print (e)
     def show(self):
         for frames in self.winfo_children():
             frames.destroy()
@@ -47,17 +57,56 @@ class AUTH(CTkFrame):
         try:
             vald.six_less_validator(user_name, "User Name")
             vald.six_less_validator(pass_word, "Password")
-            
-            if self.data_base.user_exist(user_name, pass_word):
-                self.on_log_in = True
-                self.admin = False
-                self.show()
-                file = open("cmm.data", "w")
-                file.write(user_name+ " " +pass_word)
+            #check if the user exist on a database
+            try: 
+                self.data_base.user_exist(user_name, pass_word)
+                #changing frame and changing statuses
+                self.set_user(user_name=user_name, pass_word=pass_word)
+            except vald.DatabaseError as e:
+                print (e)
         except vald.ValidationError as e:
             print (e)
+    #this function help the user if he is intered locally
+    def log_in_fun_from_file(self, user_name, pass_word):
+        # validating the user input
+        try:
+            vald.user_name_validator(user_name, "User Name")
+            vald.six_less_validator(pass_word, "Password")
+            #check if the user exist on a database
+            try: 
+                self.data_base.user_exist(user_name, pass_word)
+                self.set_user(user_name=user_name, pass_word=pass_word)
+            except vald.DatabaseError as e:
+                print(e)
+        except vald.ValidationError as e:
+            print (e)
+    #signing up    
+    def set_user(self, user_name, pass_word):
+        self.on_log_in = True
+        self.admin = False
+        self.status.set_user_name(user_name)
+        self.show()
+        file = open(ac.local_data_path, "w")
+        file.write(user_name+ " " +pass_word)
+        file.close()
+    def sign_up_fun(self,name, user_name, email, pass_word, conf_password):
+        try:
+            vald.name_validator(name)
+            vald.user_name_validator(user_name)
+            vald.email_validator(email)
+            vald.six_less_validator(pass_word, "Password")
+            vald.six_less_validator(conf_password, "Confirm Password")
+            # check if the user exist to avoid dubplicated user
+            if not (pass_word == conf_password):
+                raise vald.ValidationError("Password and Confirmed password is not The same")
+            try:
+                self.data_base.register_user(name=name, user_name=user_name, email=email, pass_word=pass_word)
+                self.set_user(user_name=user_name, pass_word=pass_word)
+            except vald.DatabaseError as e:
+                print (e)
+        except vald.ValidationError as e:
+            print(e)
 
-        
     #create the log frame
     def log_in_frame(self):
         #create contents
@@ -94,7 +143,7 @@ class AUTH(CTkFrame):
         name = CTkEntry(master=self.sign_up, placeholder_text="Full Name")
         pass_word = CTkEntry(master=self.sign_up, placeholder_text="Password")
         confirm_pass_word = CTkEntry(master=self.sign_up, placeholder_text="Confirm Password")
-        log_in = CTkButton(master=self.sign_up, text="Sign Up")
+        log_in = CTkButton(master=self.sign_up, text="Sign Up", command=lambda:self.sign_up_fun(name.get(), user_name.get(),  email.get(), pass_word.get(), confirm_pass_word.get()))
         no_acc = CTkButton(master=self.sign_up, text="Already Have Account", hover_color=ac.FG_COLOR,text_color="black",fg_color="transparent",command=self.change_frame)
         #resizing contents
         name.configure(width=300)
@@ -124,6 +173,8 @@ class AUTH(CTkFrame):
             self.log_in_frame()
             self.on_log_in = not self.on_log_in
     def log_out(self):
+        if os.path.exists(ac.local_data_path):
+            os.remove(ac.local_data_path)
         for frames in self.winfo_children():
             frames.destroy()
         self.on_log_in = False

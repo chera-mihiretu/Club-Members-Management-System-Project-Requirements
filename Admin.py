@@ -8,7 +8,7 @@ class Admin:
         # creating the pages
         self.side_bar = CTkFrame(master=parent, fg_color=ac.FG_COLOR, corner_radius=0)
         self.main_page = CTkFrame(master=parent,fg_color=ac.WHITE_BG, corner_radius=10)
-
+        
 
         #selected item to view
         self.selected = "Developers"

@@ -11,15 +11,20 @@ class MainFrame(CTk):
         # declaration of frames
         self.auth = AUTH(self)
         # handling situation like closing database when window is closed #
-        self.bind("<Destroy>", lambda event:self.close_files())
-    def plat(self):
-        print("may be")
+        #self.bind("<Destroy>", lambda event:self.close_files("real"))
+    
+    def __del__(self):
+        self.close_files()
+    def __exit__(self):
+        self.close_files()
+    
     # calling the destructer function  in such way we can close the databse #
     def close_files(self):
         # This function is called multiple times when the window is closed
         # so after it deleted it, again it will try to delete it, but the object is already deleted
         # in that case we face undefined object exception that is why we need to handle 
         # the exception
+        print ("files are closed")
         try:
             self.auth.data_base.close_db()
             del self.auth
