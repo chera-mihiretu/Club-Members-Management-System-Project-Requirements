@@ -26,6 +26,7 @@
     <Compile Include="app_constants.py" />
     <Compile Include="Club_Members_Management.py" />
     <Compile Include="db_manager.py" />
+    <Compile Include="encrption.py" />
     <Compile Include="LoggedIn.py" />
     <Compile Include="validator.py" />
   </ItemGroup>

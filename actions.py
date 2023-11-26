@@ -9,6 +9,7 @@ from LoggedIn import *
 from Admin import *
 from db_manager import DataBase
 import validator as vald
+
 class AUTH(CTkFrame):
     def __init__(self, parent):
         CTkFrame.__init__(self, master=parent)

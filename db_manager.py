@@ -1,6 +1,7 @@
 import sqlite3
 import math
 import app_constants as ac
+import encrption as crpt
 class DataBase:
     def __init__(self):
 
@@ -62,17 +63,11 @@ class DataBase:
                    ac.USER_TABLE_ATTRIBUTE[0], 
                    user_name))
         value = value.fetchall()
-        print("""
-            SELECT {}, {}  FROM {}
-            WHERE {} = "{}"
-        """.format(ac.USER_TABLE_ATTRIBUTE[0],
-                   ac.USER_TABLE_ATTRIBUTE[3],
-                   ac.USER_TABLE, 
-                   ac.USER_TABLE_ATTRIBUTE[0], 
-                   user_name))
+        print(value)
+        print([(user_name, "{}".format(crpt.hash_it(password)))])
         if value == []:
             return False
-        elif value == [(user_name, password)]:
+        elif value == [(user_name, "{}".format(crpt.hash_it(password)))]:
             return True
         return False
         
