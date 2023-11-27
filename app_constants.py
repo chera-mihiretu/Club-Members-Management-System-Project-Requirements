@@ -8,6 +8,7 @@ HOVER_COLOR = "#DB9167"
 WHITE_BG = "#E7E7FC"
 BLUE_BG = "#0088FF"
 TITLE = "CMM"
+CSEC_ICON = "/images/csec_image.jpg"
 DEV_ICON = "dev_icon.png"
 WINDOW_SIZE = "600x400"
 FRAME_X:int = 600

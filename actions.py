@@ -21,7 +21,7 @@ class AUTH(CTkFrame):
         
         ### create the sign up and log in page
         self.on_log_in = False
-        self.admin = True
+        self.admin = False
         self.parent = parent
         
         #self.main_frame=CTkFrame(master=parent)
@@ -67,9 +67,9 @@ class AUTH(CTkFrame):
                 else:
                     self.set_admin()
             except vald.DatabaseError as e:
-                print (e)
+                e.display()
         except vald.ValidationError as e:
-            print (e)
+            e.display()
     #this function help the user if he is intered locally
     def log_in_fun_from_file(self, user_name, pass_word):
         # validating the user input
@@ -85,9 +85,9 @@ class AUTH(CTkFrame):
                 self.set_user(user_name=user_name, pass_word=pass_word)
                 
             except vald.DatabaseError as e:
-                print(e)
+                e.display()
         except vald.ValidationError as e:
-            print (e)
+            e.display()
     def set_admin(self):
         self.on_log_in = False
         self.admin = True
@@ -116,9 +116,9 @@ class AUTH(CTkFrame):
                 self.data_base.register_user(name=name, user_name=user_name, email=email, pass_word=pass_word)
                 self.set_user(user_name=user_name, pass_word=pass_word)
             except vald.DatabaseError as e:
-                print (e)
+                e.display()
         except vald.ValidationError as e:
-            print(e)
+            e.display()
 
     #create the log frame
     def log_in_frame(self):

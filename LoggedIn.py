@@ -73,7 +73,7 @@ class LoggedIn:
             if i == self.selected:
                 self.menus_items[i]._bg_color = ac.BLUE_BG
             self.menus_items[i].pack(fill=tk.X, side=tk.TOP, pady=5, padx=5)
-
+    
     ##################################################################
     ######################create page contents########################
     ##################################################################
@@ -82,7 +82,7 @@ class LoggedIn:
         if value != []:
             for post_id, post_title, post_desc, url in value:
                 self.single_post(self.frame_dictionary[self.selected], 
-                                 post_id, post_title,post_desc, url)
+                                 post_id, vald.short(post_title),vald.short(post_desc), url)
     def dev_page(self, parent):
         value = self.database.extract_devs()
         if value != []:

@@ -1,4 +1,4 @@
-
+from tkinter import messagebox
 def email_validator(text):
     if text == "":
         raise ValidationError("Empty Entry for email")
@@ -44,6 +44,27 @@ def ten_less_validator(text, type_t):
 class ValidationError(Exception):
     def __init__(self, message):
         self.message = message
+    def display(self):
+        messagebox.showerror(title="ERROR", message=self.message)
+
 class DatabaseError(Exception):
     def __init__(self, message):
         self.message = message
+    def display(self):
+        messagebox.showinfo(title="ERROR", message=self.message)
+
+
+## this function helps me to make the text description 
+## line by line instead of a single line
+def short(text):
+    mode = 0
+    edited_string  = ""
+        
+    for i in range(len(text)):
+        if not i % 50 and i != 0:
+            edited_string += text[mode*50:i] +"\n"
+            mode +=1
+    else:
+        if not len(text) % 50 == 0:
+            edited_string += text[mode*50:len(text)] +"\n"
+    return edited_string

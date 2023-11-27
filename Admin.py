@@ -81,9 +81,9 @@ class Admin:
         if value != []:
             for post_id, post_title, post_desc, url in value:
                 self.single_post(self.frame_dictionary[self.selected], post_id,
-                                 post_title, post_desc, url)
+                                 vald.short(post_title), vald.short(post_desc), url)
     def create_post(self, parent):
-        self.url = None
+        self.url = ""
         #creating a post inviroment
         post_title = CTkEntry(master=parent, placeholder_text="Title")
         #post desc label
@@ -102,7 +102,7 @@ class Admin:
         post_desc.pack(side=tk.TOP, ipadx=60)
         choose_pic.pack(side=tk.TOP, pady=10)
         upload.pack(side=tk.TOP, pady=10)
-        print(self.url)
+        
     #setting the url
     def select_file(self):
         self.url  = tk.filedialog.askopenfilename()
@@ -111,6 +111,7 @@ class Admin:
         
         
     def new_post(self, post_title:str, post_desc:str):
+        
         try:
             vald.six_less_validator(post_title, "Post Title")
             vald.ten_less_validator(post_desc, "Description")
@@ -130,23 +131,22 @@ class Admin:
                     for i in range(-1, -len(temp_url), -1):
                         if temp_url[i] == ".":
                             temp_url = temp_url[:i]+"cp"+temp_url[i:]
-                            print(temp_url)
+                            
                 if not os.path.exists(os.getcwd()+"\\images\\"+temp_url):
                     shutil.copy(self.url, os.getcwd()+"\\images\\"+temp_url)
-                    
+                    self.url = os.getcwd()+"\\images\\"+temp_url
                 
                 
-                for i in range(-1, -(len(self.url)+1), -1):
-                    if self.url[i] == "\\":
-                        self.url = "\\images\\" + self.url[i:]
-                        break
+                
             else:
                 self.url = ""
+            
             self.database.create_post(post_title, post_desc, self.url)
+            self.url = ""
             self.change("Posts")
-           
+            
         except vald.ValidationError as e:
-            print(e)
+            e.display()
 
 
 
@@ -208,14 +208,17 @@ class Admin:
                     continue
 
             frames_to_dis[i].pack(fill=tk.X, expand=False,side=tk.TOP)
-        delete = CTkButton(master=frame, text="Delete", command=lambda:self.delete_post(frame_holder, post_id))
-        if not title == "Welcome...    ":
+        delete = CTkButton(master=frame, text="Delete", command=lambda:self.delete_post(frame_holder, post_id, url))
+        if not post_id == 1:
             delete.pack(side=tk.TOP, padx=10,pady=10)
         frame.pack(expand=False, padx=10, pady=10,ipadx=80,side=tk.LEFT)
         frame_holder.pack(expand=False, fill=tk.X, side=tk.TOP)
     #to delete a given post
-    def delete_post(self, holder, post_id):
+    def delete_post(self, holder, post_id, url):
         self.database.delete_post(post_id)
+        
+        if os.path.exists(url):
+            os.remove(url)
         holder.destroy()
 
     

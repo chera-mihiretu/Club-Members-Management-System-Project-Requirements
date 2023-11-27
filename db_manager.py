@@ -1,4 +1,5 @@
 from atexit import register
+import os
 import sqlite3
 import math
 import app_constants as ac
@@ -63,6 +64,19 @@ class DataBase:
             print(e)
         self.connection.commit()
 
+        val = self.cursor.execute(f"""
+            SELECT * FROM {ac.POST_TABLE} WHERE {ac.POST_TABLE_ATTRIBUTE[0]}="{1}"
+        """).fetchall()
+        if val == []:
+            self.cursor.execute(f"""
+                INSERT INTO {ac.POST_TABLE}("{ac.POST_TABLE_ATTRIBUTE[0]}",
+                "{ac.POST_TABLE_ATTRIBUTE[1]}",
+                "{ac.POST_TABLE_ATTRIBUTE[2]}",
+                "{ac.POST_TABLE_ATTRIBUTE[3]}")
+                VALUES({1}, "{"Welcome..."}", "{"We are happy that we have you here"}", "{os.getcwd()+ac.CSEC_ICON}")
+                
+            """)
+            self.connection.commit()
         
     # check if user exists
     def user_exist(self, user_name, password):
@@ -93,7 +107,7 @@ class DataBase:
             raise vald.DatabaseError("We found user with same user name or email please change the email or user_name")
         
         self.cursor.execute(f"""
-            INSERT INTO {ac.USER_TABLE} ({ac.USER_TABLE_ATTRIBUTE[0]},
+            INSERT INTO "{ac.USER_TABLE}" ({ac.USER_TABLE_ATTRIBUTE[0]},
             {ac.USER_TABLE_ATTRIBUTE[1]},
             {ac.USER_TABLE_ATTRIBUTE[2]},
             {ac.USER_TABLE_ATTRIBUTE[3]})
@@ -115,16 +129,19 @@ class DataBase:
             DELETE FROM {ac.USERS_INFO_TABLE} WHERE {ac.USERS_INFO_TABLE_ATTRIBUTES[0]} = "{user_name}";
         """)
         self.connection.commit()
-
+    
     #extract posts from database
     def extract_post(self):
         self.cursor.execute(f"""
-            SELECT * FROM {ac.POST_TABLE}
+            SELECT * FROM {ac.POST_TABLE} ORDER BY {ac.POST_TABLE_ATTRIBUTE[0]} DESC
         """)
-
         value =  self.cursor.fetchall()
-        if value == []:
-            print("database is empty")
+        #this loop is to make the welcome post at the top 
+        for l in range(len(value)):
+            if value[l][0] == 1:
+                value.insert(0, value.pop(l))
+                break
+
         return value
     #extract developer from database
     def extract_devs(self):
@@ -135,8 +152,8 @@ class DataBase:
         """)
 
         value =  self.cursor.fetchall()
-        if value == []:
-            print("database is empty")
+        
+            
         
         return value
        
